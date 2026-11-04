@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Route Lookup 48653</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&display=swap">
+<style>
+:root{--bg:#f2f2ee;--fg:#16181a;--mut:#5a6068;--panel:#fff;--line:#c9ccd0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101214;--fg:#f1f2f3;--mut:#9aa1a9;--panel:#1a1d20;--line:#32373d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101214;--fg:#f1f2f3;--mut:#9aa1a9;--panel:#1a1d20;--line:#32373d;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:600;padding:12px;max-width:640px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 2px;font-weight:800}
+.sub{color:var(--mut);font-size:16px;margin:0 0 12px}
+#mic{width:100%;height:96px;border:0;border-radius:18px;background:#d62f2f;color:#fff;font:800 34px "Barlow Condensed","Arial Narrow",system-ui,sans-serif;cursor:pointer}
+#mic.on{background:#1f9d55}
+#status{min-height:26px;margin:8px 2px;font-size:20px;color:var(--mut)}
+.row{display:flex;gap:8px;margin-bottom:12px}
+#q{flex:1;min-width:0;height:52px;border:2px solid var(--line);border-radius:12px;background:var(--panel);color:var(--fg);font:600 22px "Barlow Condensed","Arial Narrow",system-ui,sans-serif;padding:0 12px}
+#go{height:52px;padding:0 18px;border:0;border-radius:12px;background:var(--fg);color:var(--bg);font:800 22px "Barlow Condensed","Arial Narrow",system-ui,sans-serif}
+.card{background:var(--c);color:#fff;border-radius:18px;padding:12px 16px 14px;margin-bottom:10px}
+.rt{font-weight:800;font-size:clamp(76px,28vw,150px);line-height:.95;letter-spacing:1px}
+.nm{font-size:28px;font-weight:800;margin-top:4px}
+.dt{font-size:20px;opacity:.95;line-height:1.25}
+.flag{display:inline-block;background:rgba(0,0,0,.28);border-radius:6px;padding:0 8px;margin-left:6px;font-size:18px}
+.also{margin:8px 0}
+.also p{margin:0 0 6px;color:var(--mut);font-size:18px}
+.chip{display:inline-block;margin:0 6px 6px 0;padding:8px 14px;border-radius:999px;border:2px solid var(--c,var(--line));background:var(--panel);color:var(--fg);font:600 20px "Barlow Condensed","Arial Narrow",system-ui,sans-serif;cursor:pointer}
+.none{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:14px;font-size:22px}
+details{margin-top:14px;color:var(--mut)}
+summary{font-size:18px;cursor:pointer;padding:6px 0}
+.tools{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:18px;color:var(--mut)}
+:focus-visible{outline:3px solid #2b6fd6;outline-offset:2px}
+</style>
+</head>
+<body>
+<h1>Route lookup, ZIP 48653</h1>
+<p class="sub">Test build: page 1 only (A through Au, plus numbered streets).</p>
+
+<button id="mic" type="button">Tap and say street</button>
+<div id="status" aria-live="polite">Say the street. Add north or south for numbered streets.</div>
+
+<div class="row">
+  <input id="q" type="text" inputmode="text" autocomplete="off" autocapitalize="off" placeholder="Type, or tap keyboard mic" aria-label="Street name">
+  <button id="go" type="button">Find</button>
+</div>
+
+<div id="out"></div>
+
+<div class="tools"><label><input type="checkbox" id="speak" checked> Read route aloud</label></div>
+
+<details>
+  <summary>Streets on this page (tap one to test)</summary>
+  <div id="all"></div>
+</details>
+
+<script>
+/* dir, name, suffix, range, route. Page 1 of the scheme listing. */
+var RAW=[
+["N","1ST","ST","150-199","R005"],["S","1ST","ST","100-299","R005"],
+["N","2ND","ST","100-199","R005"],["S","2ND","ST","100-199","R005"],
+["N","3RD","ST","101-499","R005"],["","3RD LAKE","RD","7900-7999","R005"],
+["N","4TH","ST","109-699","R005"],["S","4TH","ST","100-399","R005"],
+["N","5TH","ST","1-699","R005"],["S","5TH","ST","100-799","R005"],
+["N","6TH","ST","200-299","H088"],["S","6TH","ST","100-399","R005"],
+["","7 MILE","RD","2200-4999","R004"],
+["N","7TH","ST","100-299","R005"],["S","7TH","ST","100-1299","R005"],
+["","ACORN","RD","100-299","R001"],["","ACRE","CT","200-399","R002","check"],
+["","ADAMS","BLVD","100-650","H074"],["","AGATE","DR","1-499","H074"],
+["","AIRPORT","DR","10000-10399","R005"],["","AKRON","ST","100-450","R001"],
+["","ALBERMARLE","BLVD","100-3599","R003","check"],["","ALFRED","AVE","100-499","R002"],
+["","ALGON","DR","200-299","H074"],["","ALGONQUIN","TRL","10000-10999","R004"],
+["","ALLEN","CT","10600-10799","R002"],["","ALMA","BLVD","100-399","R003"],
+["","ALMA LEGION","DR","100-199","R003"],["","AMVET","DR","8300-8799","R001"],
+["","ANCHORAGE","TRL","1-399","H068"],["","ANNA","AVE","100-299","R005"],
+["","ANTLER","CT","1-499","R005"],["","APACHE","","500-599","R001"],
+["","APACHE","TRL","200-399","R005"],["","ARBUTUS","LN","100-299","H089"],
+["","ARGUS","CT","1-200","R002"],["","ARNES","CT","10000-10499","H089"],
+["","ARROWWOOD","","11700-11799","H088"],["","ASH","ST","1-199","R003"],
+["","ASHLEE","TRL","7200-7499","R004"],["","ASPEN","","10000-10999","H078"],
+["","AUSABLE","TRL","1100-1149","R005"]
+];
+var D=RAW.map(function(r){var p=r[3].split("-");return{dir:r[0],name:r[1].toLowerCase(),suf:r[2],lo:+p[0],hi:+p[1],crid:r[4],chk:!!r[5]}});
+var COL={R001:"#1f9d55",R002:"#2b6fd6",R003:"#b85f00",R004:"#8e44ad",R005:"#d62f2f",H068:"#00838f",H074:"#6d4c41",H078:"#c2185b",H088:"#455a64",H089:"#6b7a12"};
+function col(c){return COL[c]||"#333"}
+var DIRW={north:"N",n:"N",south:"S",s:"S"};
+var SUF={street:"ST",st:"ST",road:"RD",rd:"RD",drive:"DR",dr:"DR",court:"CT",ct:"CT",lane:"LN",ln:"LN",trail:"TRL",trl:"TRL",avenue:"AVE",ave:"AVE",boulevard:"BLVD",blvd:"BLVD"};
+var NUMW={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10};
+var ORDW={first:"1st",second:"2nd",third:"3rd",fourth:"4th",fifth:"5th",sixth:"6th",seventh:"7th",eighth:"8th",ninth:"9th",tenth:"10th"};
+
+function lev(a,b){var m=a.length,n=b.length,i,j,d=[];for(i=0;i<=m;i++){d[i]=[i]}for(j=1;j<=n;j++)d[0][j]=j;
+for(i=1;i<=m;i++)for(j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+function ph(s){s=s.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/ph/g,"f").replace(/[ckq]/g,"k").replace(/[sz]/g,"s").replace(/[dt]/g,"t").replace(/[bp]/g,"p").replace(/[gj]/g,"g");
+s=s.charAt(0)+s.slice(1).replace(/[aeiouyhw]/g,"");return s.replace(/(.)\1+/g,"$1")}
+
+function parse(raw){
+  var t=raw.toLowerCase().replace(/[.,'’]/g," ").replace(/-/g," ").split(/\s+/).filter(Boolean),dir="",suf="",house=null,out=[];
+  t=t.map(function(w){return ORDW[w]||(NUMW[w]&&NUMW[w])||w});
+  for(var i=0;i<t.length;i++){
+    var w=String(t[i]);
+    if(DIRW[w]&&!dir&&(i<t.length-1||t.length>1)){dir=DIRW[w];continue}
+    if(SUF[w]&&out.length){suf=SUF[w];continue}
+    if(/^\d+$/.test(w)&&out.length===0&&house===null&&String(t[i+1]).indexOf("mile")!==0&&t.length>i+1){house=+w;continue}
+    out.push(w);
+  }
+  return{name:out.join(" "),dir:dir,suf:suf,house:house};
+}
+function score(e,q){
+  var n=e.name;if(n===q)return 0;
+  if(n.indexOf(q+" ")===0||q.indexOf(n+" ")===0)return .2;
+  if(q.length>=4&&n.indexOf(q)===0)return .25;
+  var a=lev(n,q)/Math.max(n.length,q.length),b=lev(ph(n),ph(q))/Math.max(ph(n).length,ph(q).length,1);
+  return Math.min(a,b)+.05;
+}
+function search(alts){
+  var best=null;
+  alts.forEach(function(raw,ai){
+    var p=parse(raw);if(!p.name)return;
+    var sc=D.map(function(e){var s=score(e,p.name)+ai*.01;if(p.suf&&e.suf===p.suf)s-=.05;return{e:e,s:s}});
+    var m=Math.min.apply(null,sc.map(function(x){return x.s}));
+    if(!best||m<best.m)best={m:m,sc:sc,p:p};
+  });
+  return best;
+}
+function fmtName(e){return(e.dir?e.dir+" ":"")+e.name.toUpperCase()+(e.suf?" "+e.suf:"")}
+function say(c){return"Route "+c.split("").map(function(x){return x==="0"?"zero":x}).join(" ")}
+
+function show(alts){
+  var out=document.getElementById("out"),r=search(alts);
+  if(!r||r.m>.45){out.innerHTML='<div class="none">No match for “'+esc(alts[0])+'”. Try again, or type it.</div>';return}
+  var p=r.p,base=r.m,prim=r.sc.filter(function(x){return x.s<=base+.0001}).map(function(x){return x.e});
+  var nm=prim[0].name,same=r.sc.filter(function(x){return x.e.name===nm&&Math.abs(x.s-base)<.07}).map(function(x){return x.e});
+  prim=same.length?same:prim;
+  if(p.dir){var f=prim.filter(function(e){return e.dir===p.dir||!e.dir});if(f.length)prim=f}
+  var oor=false;
+  if(p.house!==null){var f2=prim.filter(function(e){return p.house>=e.lo&&p.house<=e.hi});if(f2.length)prim=f2;else oor=true}
+  var groups={};prim.forEach(function(e){(groups[e.crid]=groups[e.crid]||[]).push(e)});
+  var h="";
+  Object.keys(groups).forEach(function(c){
+    var es=groups[c],lines=es.map(function(e){return fmtName(e)+" · "+e.lo+"–"+e.hi+(e.chk?'<span class="flag">check paper</span>':"")});
+    var title=es.length>1&&es.every(function(e){return e.name===es[0].name&&e.suf===es[0].suf})?"N & S "+es[0].name.toUpperCase()+(es[0].suf?" "+es[0].suf:""):fmtName(es[0]);
+    h+='<div class="card" style="--c:'+col(c)+'"><div class="rt">'+c+'</div><div class="nm">'+esc(title)+'</div><div class="dt">'+lines.join("<br>")+'</div></div>';
+  });
+  if(oor)h+='<div class="none">House number '+p.house+' is outside the listed range. Check paper.</div>';
+  var seen={};prim.forEach(function(e){seen[e.name+"|"+e.suf]=1});
+  var also=[],used={};
+  r.sc.slice().sort(function(a,b){return a.s-b.s}).forEach(function(x){var k=x.e.name+"|"+x.e.suf;if(!seen[k]&&!used[k]&&x.s<=.5&&also.length<4){used[k]=1;also.push(x.e)}});
+  if(also.length){h+='<div class="also"><p>Did you mean:</p>'+also.map(function(e){return'<button class="chip" style="--c:'+col(e.crid)+'" data-q="'+esc(e.name+" "+e.suf)+'">'+esc(e.name.toUpperCase()+(e.suf?" "+e.suf:""))+" · "+e.crid+"</button>"}).join("")+"</div>"}
+  out.innerHTML=h;
+  if(document.getElementById("speak").checked&&window.speechSynthesis&&Object.keys(groups).length){
+    try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(Object.keys(groups).map(function(c){return say(c)}).join(". "));u.rate=1.1;speechSynthesis.speak(u)}catch(e){}
+  }
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+var mic=document.getElementById("mic"),st=document.getElementById("status"),q=document.getElementById("q"),rec=null,listening=false;
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function run(v){q.value=v;show([v])}
+document.getElementById("go").onclick=function(){if(q.value.trim())show([q.value])};
+q.addEventListener("keydown",function(e){if(e.key==="Enter"&&q.value.trim())show([q.value])});
+var tm=null;q.addEventListener("input",function(){clearTimeout(tm);tm=setTimeout(function(){if(q.value.trim())show([q.value])},900)});
+document.addEventListener("click",function(e){var c=e.target.closest&&e.target.closest("[data-q]");if(c){run(c.getAttribute("data-q"))}});
+if(!SR){mic.disabled=true;mic.textContent="Voice not supported";st.textContent="Use Chrome on your phone, or type below."}
+else{
+  mic.onclick=function(){
+    if(listening){rec&&rec.stop();return}
+    if(!window.isSecureContext){st.textContent="Microphone needs a secure HTTPS website. Open the GitHub Pages https:// address, not the downloaded HTML file.";return}
+    try{speechSynthesis.cancel()}catch(e){}
+    rec=new SR();rec.lang="en-US";rec.interimResults=false;rec.maxAlternatives=5;
+    rec.onstart=function(){listening=true;mic.classList.add("on");mic.textContent="Listening…";st.textContent="Say the street."};
+    rec.onresult=function(ev){
+      var alts=[];for(var i=0;i<ev.results[0].length;i++)alts.push(ev.results[0][i].transcript);
+      q.value=alts[0];st.textContent="Heard: “"+alts[0]+"”";show(alts);
+    };
+    rec.onerror=function(ev){
+      var m={"not-allowed":"Chrome blocked microphone access for this website. Check the site microphone permission in Chrome settings.","service-not-allowed":"Speech recognition is blocked for this website or browser session. Check Chrome site permissions and try again.","audio-capture":"No microphone was available. Check that another app is not using it.","no-speech":"Didn’t hear anything. Tap and try again.","network":"Speech recognition could not connect. Check your internet connection and try again."};
+      st.textContent=(m[ev.error]||("Voice error: "+ev.error))+" ["+ev.error+", "+(window.top!==window.self?"framed":"direct")+"]";
+    };
+    rec.onend=function(){listening=false;mic.classList.remove("on");mic.textContent="Tap and say street"};
+    rec.onnomatch=function(){st.textContent="I couldn’t make that out. Please try again or type the street."};
+    try{rec.start()}catch(e){st.textContent="Couldn’t start the mic. Tap again."}
+  };
+}
+var names={},all=document.getElementById("all"),ah="";
+D.forEach(function(e){var k=(e.dir?e.dir+" ":"")+e.name+(e.suf?" "+e.suf:"");if(!names[k]){names[k]=1;ah+='<button class="chip" style="--c:'+col(e.crid)+'" data-q="'+esc(k)+'">'+esc(k.toUpperCase())+"</button>"}});
+all.innerHTML=ah;
+</script>
+</body>
+</html>
